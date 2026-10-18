@@ -3,6 +3,13 @@
  * Inicial todavía no leen: cada pregunta y sus alternativas se escuchan.
  */
 
+/**
+ * Velocidad y tono de la voz (1 es lo normal del sistema; el tono llega hasta 2):
+ * un poco más lenta y más aguda. Algunas voces ignoran el tono.
+ */
+export const RATE = 0.9;
+export const PITCH = 1.3;
+
 export const canSpeak = (): boolean => typeof window !== "undefined" && "speechSynthesis" in window;
 
 function spanishVoice(): SpeechSynthesisVoice | undefined {
@@ -22,7 +29,8 @@ export function speak(text: string): void {
   utterance.lang = "es-PE";
   const voice = spanishVoice();
   if (voice) utterance.voice = voice;
-  utterance.rate = 0.9;
+  utterance.rate = RATE;
+  utterance.pitch = PITCH;
   synth.speak(utterance);
 }
 
