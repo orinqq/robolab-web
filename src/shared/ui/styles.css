@@ -2000,6 +2000,28 @@ textarea.input {
   gap: 20px;
 }
 
+.sound-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sound-levels {
+  padding: 2px;
+}
+
+.sound-levels button {
+  min-height: 32px;
+  min-width: 36px;
+  padding: 0 10px;
+  font-size: 0.85rem;
+}
+
+.sound-level-bars {
+  display: none;
+  letter-spacing: -1px;
+}
+
 .explore-nav {
   display: flex;
   gap: 4px;
@@ -2050,11 +2072,16 @@ textarea.input {
   }
 
   /* En el celular el botón de sonido va junto al menú y solo con su ícono (la palabra queda para el lector de pantalla). */
-  .sound-toggle {
+  .sound-control {
     margin-left: auto;
   }
 
-  .sound-toggle-label {
+  .sound-level-bars {
+    display: inline;
+  }
+
+  .sound-toggle-label,
+  .sound-level-label {
     position: absolute;
     width: 1px;
     height: 1px;

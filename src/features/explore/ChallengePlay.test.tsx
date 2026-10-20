@@ -23,6 +23,8 @@ vi.mock("../../shared/sound/sounds", () => ({
   shouldStepSound: () => true,
   isMuted: () => false,
   setMuted: vi.fn(),
+  getVolume: () => "medium",
+  setVolume: vi.fn(),
   subscribeMuted: () => () => undefined,
 }));
 
