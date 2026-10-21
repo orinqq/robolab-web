@@ -13,6 +13,7 @@ import { MissionPlayer } from "../../../mission/MissionPlayer";
 import { CreatorStepper } from "../CreatorStepper";
 import { GAME_PATH } from "./NewRetoChoice";
 import { MissionPreview } from "./MissionPreview";
+import { TeacherPreference } from "./TeacherPreference";
 import "../retos.css";
 
 type Grade = 2 | 3 | 4;
@@ -49,6 +50,12 @@ function failureKind(code: FailureCode | string): keyof typeof FAILURE {
   if (code === "PROVIDER_AUTH" || code === "PROVIDER_NOT_CONFIGURED") return "down";
   return "incomplete";
 }
+
+/** Qué pasó con la nota del docente al generar en la nube (la Jetson no la usa). */
+const PREFERENCE_NOTE: Partial<Record<Generated["preference"], string>> = {
+  used: "Usamos tu nota sobre tus clases para proponerlas.",
+  unavailable: "No pudimos leer tu nota a tiempo: estas propuestas se hicieron sin ella.",
+};
 
 const gradeName = (g: number) => `${g}.º`;
 const list = (grades: readonly number[]) => grades.map(gradeName).join(", ").replace(/, ([^,]*)$/, " y $1");
@@ -87,6 +94,7 @@ export function AssistantPage() {
   const [chosen, setChosen] = useState<ReadonlySet<Grade>>(new Set());
   const [missing, setMissing] = useState<readonly Grade[]>([]);
   const [failure, setFailure] = useState<keyof typeof FAILURE | null>(null);
+  const [preferenceNote, setPreferenceNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [asking, setAsking] = useState<readonly Grade[]>([]);
   const [saving, setSaving] = useState(false);
@@ -132,6 +140,7 @@ export function AssistantPage() {
         return;
       }
       setProposals(result.proposals);
+      setPreferenceNote("preference" in result ? (PREFERENCE_NOTE[result.preference] ?? null) : null);
       setChosen(new Set(result.proposals.map((p) => p.grade)));
       setMissing(result.failed.map((f) => f.grade));
       setPhase("review");
@@ -271,6 +280,7 @@ export function AssistantPage() {
               El servidor ya comprobó que cada misión se puede resolver. Elige cuáles guardar.
               {missing.length > 0 && ` Solo pudimos verificar misiones para ${list(proposals.map((p) => p.grade))}: puedes volver y probar de nuevo para ${list(missing)}.`}
             </p>
+            {preferenceNote && <p className="small">{preferenceNote}</p>}
           </div>
           <ul className="proposal-grid" aria-label="Propuestas">
             {proposals.map((p) => {
@@ -334,6 +344,7 @@ export function AssistantPage() {
           </div>
         </section>
       ) : (
+        <>
         <form className="stack" onSubmit={ask} aria-labelledby="assistant-title" noValidate>
           <div className="stack-sm">
             <h1 key={phase} ref={focusTitle} tabIndex={-1} id="assistant-title" className="creator-title">
@@ -443,6 +454,8 @@ export function AssistantPage() {
             </button>
           </div>
         </form>
+        {source === "cloud" && <TeacherPreference />}
+        </>
       )}
     </div>
   );

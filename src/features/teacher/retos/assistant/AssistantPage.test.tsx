@@ -13,7 +13,10 @@ const createReto = vi.fn();
 const status = vi.fn();
 const classes = vi.fn();
 vi.mock("convex/react", () => ({
-  useQuery: (ref: unknown) => (getFunctionName(ref as never) === "classrooms:listMine" ? classes() : status()),
+  useQuery: (ref: unknown) => {
+    const name = getFunctionName(ref as never);
+    return name === "classrooms:listMine" ? classes() : name === "teacherMemory:status" ? { enabled: false, owner: "u1" } : status();
+  },
   useAction: (ref: unknown) => getFunctionName(ref as never) === "agent:reviewLocal" ? reviewLocal : generate,
   useMutation: (ref: unknown) => (getFunctionName(ref as never) === "assignments:create" ? createReto : save),
 }));
@@ -189,6 +192,20 @@ describe("asistente: revisar y guardar (G3)", () => {
     expect(within(cards[0]!).getByText(/Energía mínima 6 de/)).toBeTruthy();
     expect(screen.getByText("2 misiones elegidas")).toBeTruthy();
     expect(screen.queryByText(/No pasó la revisión/i)).toBeNull();
+  });
+
+  it("dice si usó la nota del docente o si no pudo leerla, según el servidor", async () => {
+    generate.mockResolvedValue({ status: "ok", preference: "used", proposals: [proposal(2)], failed: [] });
+    await review();
+    expect(screen.getByText("Usamos tu nota sobre tus clases para proponerlas.")).toBeTruthy();
+    cleanup();
+    generate.mockResolvedValue({ status: "ok", preference: "unavailable", proposals: [proposal(2)], failed: [] });
+    await review();
+    expect(screen.getByText(/se hicieron sin ella/)).toBeTruthy();
+    cleanup();
+    generate.mockResolvedValue({ status: "ok", preference: "off", proposals: [proposal(2)], failed: [] });
+    await review();
+    expect(screen.queryByText(/tu nota/)).toBeNull();
   });
 
   it("dice cuánto cuesta otra ruta posible, para comparar con la energía mínima", async () => {

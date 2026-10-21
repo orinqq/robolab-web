@@ -23,7 +23,7 @@
     "@fontsource-variable/baloo-2": "5.3.0",
     "@fontsource/lilita-one": "5.3.0",
     "@mediapipe/tasks-vision": "1.1.1",
-    "@robolab/backend": "git+https://github.com/orinqq/robolab-backend.git#8e8f991421515d15691a228ccc87415c691c8785",
+    "@robolab/backend": "git+https://github.com/cuevaio/hta-robolab-backend-orinqq.git#7ccf47fb48ed1c37b1ea4477c9dbaa7d7c8fe97c",
     "blobatar": "2.7.0",
     "convex": "1.47.0",
     "qrcode": "1.5.4",
